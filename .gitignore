@@ -5,3 +5,6 @@ lambda_deployment.zip
 data/movies_raw.json
 data/*.csv
 .streamlit/secrets.toml
+
+dev/
+tempss/
