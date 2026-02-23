@@ -14,7 +14,9 @@ st.set_page_config(
 def get_connection():
     return connect(
         s3_staging_dir="s3://project-insights-data-sem6/athena-results/",
-        region_name="us-east-1"
+        region_name=st.secrets["aws"]["region_name"],
+        aws_access_key_id=st.secrets["aws"]["aws_access_key_id"],
+        aws_secret_access_key=st.secrets["aws"]["aws_secret_access_key"]
     )
 
 @st.cache_data(ttl=3600)
