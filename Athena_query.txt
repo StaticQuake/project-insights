@@ -1,0 +1,137 @@
+q1
+CREATE DATABASE project_insights;
+q2
+CREATE EXTERNAL TABLE IF NOT EXISTS project_insights.daily_metrics (
+    id INT,
+    snapshot_date STRING,
+    popularity DOUBLE,
+    vote_average DOUBLE,
+    vote_count INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://project-insights-data-sem6/raw/daily_metrics/'
+TBLPROPERTIES ('skip.header.line.count'='1');
+
+q3
+ALTER TABLE project_insights.daily_metrics
+ADD PARTITION (snapshot_date='2026-02-20')
+LOCATION 's3://project-insights-data-sem6/raw/daily_metrics/snapshot_date=2026-02-20/';
+
+q4
+SELECT * FROM project_insights.daily_metrics LIMIT 10;
+
+SELECT 
+    COUNT(*) as total_movies,
+    AVG(popularity) as avg_popularity,
+    MAX(popularity) as max_popularity,
+    MIN(popularity) as min_popularity
+FROM project_insights.daily_metrics;
+
+q5
+
+CREATE EXTERNAL TABLE IF NOT EXISTS project_insights.movies_master (
+    adult STRING,
+    backdrop_path STRING,
+    genre_ids STRING,
+    id INT,
+    original_language STRING,
+    original_title STRING,
+    overview STRING,
+    popularity DOUBLE,
+    poster_path STRING,
+    release_date STRING,
+    title STRING,
+    video STRING,
+    vote_average DOUBLE,
+    vote_count INT,
+    ingestion_date STRING,
+    source STRING,
+    release_year INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://project-insights-data-sem6/raw/movies_master/'
+TBLPROPERTIES ('skip.header.line.count'='1');
+
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS project_insights.movies_master (
+    adult STRING,
+    backdrop_path STRING,
+    genre_ids STRING,
+    id INT,
+    original_language STRING,
+    original_title STRING,
+    overview STRING,
+    popularity DOUBLE,
+    poster_path STRING,
+    release_date STRING,
+    title STRING,
+    video STRING,
+    vote_average DOUBLE,
+    vote_count INT,
+    ingestion_date STRING,
+    source STRING,
+    release_year INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://project-insights-data-sem6/raw/movies_master/'
+TBLPROPERTIES ('skip.header.line.count'='1');
+
+
+
+
+
+-- CREATE EXTERNAL TABLE IF NOT EXISTS project_insights.daily_metrics (
+--     id INT,
+--     popularity DOUBLE,
+--     vote_average DOUBLE,
+--     vote_count INT
+-- )
+-- PARTITIONED BY (snapshot_date STRING)
+-- ROW FORMAT DELIMITED
+-- FIELDS TERMINATED BY ','
+-- LINES TERMINATED BY '\n'
+-- STORED AS TEXTFILE
+-- LOCATION 's3://project-insights-data-sem6/raw/daily_metrics/'
+-- TBLPROPERTIES ('skip.header.line.count'='1');
+
+cd C:\Users\Shravan Shivane\Downloads\INSIGHT
+git init
+git add .
+git commit -m "Initial commit — Project Insights Stage 1"
+git branch -M main
+git remote add origin https://github.com/your-username/project-insights.git
+git push -u origin main
+```
+
+Replace `your-username` with your actual GitHub username.
+
+But before pushing, we need to create a `.gitignore` file so your AWS credentials and sensitive files don't get uploaded. Create a file called `.gitignore` in your INSIGHT folder with this content:
+```
+# AWS credentials
+.aws/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Lambda zip
+lambda_deployment.zip
+
+# Data files (too large for GitHub)
+data/movies_raw.json
+data/*.csv
+
+# Streamlit
+.streamlit/secrets.toml
