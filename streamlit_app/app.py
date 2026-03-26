@@ -347,8 +347,7 @@ with tab_movies:
                     CONCAT(m.title, ' (', CAST(m.release_year AS VARCHAR), ')') as display_title
                 FROM project_insights.movies_master m
                 WHERE LOWER(m.title) LIKE LOWER('%{search_m}%')
-            ) sub
-            ORDER BY release_year DESC LIMIT 15
+            ) sub ORDER BY release_year DESC LIMIT 15
         """)
         if movie_list.empty:
             st.warning("No movies found. Try a different search term.")
@@ -424,21 +423,19 @@ with tab_movies:
     if search_h1 and search_h2:
         list1 = run_query(f"""
             SELECT * FROM (
-                SELECT DISTINCT m.id, CONCAT(m.title, ' (', CAST(m.release_year AS VARCHAR), ')') as display_title,
-                    m.release_year
+                SELECT DISTINCT m.id, m.release_year,
+                    CONCAT(m.title, ' (', CAST(m.release_year AS VARCHAR), ')') as display_title
                 FROM project_insights.movies_master m
                 WHERE LOWER(m.title) LIKE LOWER('%{search_h1}%')
-            ) sub
-            ORDER BY release_year DESC LIMIT 10
+            ) sub ORDER BY release_year DESC LIMIT 10
         """)
         list2 = run_query(f"""
             SELECT * FROM (
-                SELECT DISTINCT m.id, CONCAT(m.title, ' (', CAST(m.release_year AS VARCHAR), ')') as display_title,
-                    m.release_year
+                SELECT DISTINCT m.id, m.release_year,
+                    CONCAT(m.title, ' (', CAST(m.release_year AS VARCHAR), ')') as display_title
                 FROM project_insights.movies_master m
                 WHERE LOWER(m.title) LIKE LOWER('%{search_h2}%')
-            ) sub
-            ORDER BY release_year DESC LIMIT 10
+            ) sub ORDER BY release_year DESC LIMIT 10
         """)
         if not list1.empty and not list2.empty:
             sc1, sc2 = st.columns(2)
@@ -676,8 +673,7 @@ with tab_tv:
                     CONCAT(t.name, ' (', CAST(t.first_air_year AS VARCHAR), ')') as display_title
                 FROM project_insights.tv_master t
                 WHERE LOWER(t.name) LIKE LOWER('%{search_tv}%')
-            ) sub
-            ORDER BY first_air_year DESC LIMIT 15
+            ) sub ORDER BY first_air_year DESC LIMIT 15
         """)
         if tv_list.empty:
             st.warning("No TV shows found. Try a different search term.")
@@ -752,21 +748,19 @@ with tab_tv:
     if search_tv_h1 and search_tv_h2:
         tv_list1 = run_query(f"""
             SELECT * FROM (
-                SELECT DISTINCT t.id, CONCAT(t.name, ' (', CAST(t.first_air_year AS VARCHAR), ')') as display_title,
-                    t.first_air_year
+                SELECT DISTINCT t.id, t.first_air_year,
+                    CONCAT(t.name, ' (', CAST(t.first_air_year AS VARCHAR), ')') as display_title
                 FROM project_insights.tv_master t
                 WHERE LOWER(t.name) LIKE LOWER('%{search_tv_h1}%')
-            ) sub
-            ORDER BY first_air_year DESC LIMIT 10
+            ) sub ORDER BY first_air_year DESC LIMIT 10
         """)
         tv_list2 = run_query(f"""
             SELECT * FROM (
-                SELECT DISTINCT t.id, CONCAT(t.name, ' (', CAST(t.first_air_year AS VARCHAR), ')') as display_title,
-                    t.first_air_year
+                SELECT DISTINCT t.id, t.first_air_year,
+                    CONCAT(t.name, ' (', CAST(t.first_air_year AS VARCHAR), ')') as display_title
                 FROM project_insights.tv_master t
                 WHERE LOWER(t.name) LIKE LOWER('%{search_tv_h2}%')
-            ) sub
-            ORDER BY first_air_year DESC LIMIT 10
+            ) sub ORDER BY first_air_year DESC LIMIT 10
         """)
         if not tv_list1.empty and not tv_list2.empty:
             sc1, sc2 = st.columns(2)
