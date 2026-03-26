@@ -366,10 +366,19 @@ with tab_movies:
             if len(trend) < 2:
                 st.info("Not enough data points yet for this movie. Check back after more days of collection.")
             else:
-                # Insight for trend explorer
-                pop_change = trend['popularity'].iloc[-1] - trend['popularity'].iloc[0]
+                # Time range filter
+                time_filter_m = st.radio("", ["All time", "Last 7 days", "Last 30 days", "Last 90 days"],
+                    horizontal=True, label_visibility="collapsed", key="movie_time_filter")
+                filter_map = {"Last 7 days": 7, "Last 30 days": 30, "Last 90 days": 90}
+                if time_filter_m in filter_map:
+                    trend = trend.tail(filter_map[time_filter_m])
+
+                # Insight
+                pop_change = trend["popularity"].iloc[-1] - trend["popularity"].iloc[0]
                 direction = "gained" if pop_change > 0 else "lost"
-                insight(f"<b>{selected}</b> has {direction} <b>{abs(pop_change):.1f} popularity points</b> since tracking began on {trend['snapshot_date'].iloc[0]}.", "amber")
+                start_date = trend["snapshot_date"].iloc[0]
+                period = f"over the {time_filter_m.lower()}" if time_filter_m != "All time" else f"since tracking began on {start_date}"
+                insight(f"<b>{selected}</b> has {direction} <b>{abs(pop_change):.1f} popularity points</b> {period}.", "amber")
 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -692,9 +701,19 @@ with tab_tv:
             if len(tv_trend) < 2:
                 st.info("Not enough data points yet for this show.")
             else:
-                pop_change = tv_trend['popularity'].iloc[-1] - tv_trend['popularity'].iloc[0]
+                # Time range filter
+                time_filter_tv = st.radio("", ["All time", "Last 7 days", "Last 30 days", "Last 90 days"],
+                    horizontal=True, label_visibility="collapsed", key="tv_time_filter")
+                filter_map_tv = {"Last 7 days": 7, "Last 30 days": 30, "Last 90 days": 90}
+                if time_filter_tv in filter_map_tv:
+                    tv_trend = tv_trend.tail(filter_map_tv[time_filter_tv])
+
+                # Insight
+                pop_change = tv_trend["popularity"].iloc[-1] - tv_trend["popularity"].iloc[0]
                 direction = "gained" if pop_change > 0 else "lost"
-                insight(f"<b>{sel_tv}</b> has {direction} <b>{abs(pop_change):.1f} popularity points</b> since tracking began on {tv_trend['snapshot_date'].iloc[0]}.", "amber")
+                tv_start_date = tv_trend["snapshot_date"].iloc[0]
+                period = f"over the {time_filter_tv.lower()}" if time_filter_tv != "All time" else f"since tracking began on {tv_start_date}"
+                insight(f"<b>{sel_tv}</b> has {direction} <b>{abs(pop_change):.1f} popularity points</b> {period}.", "amber")
 
                 col1, col2 = st.columns(2)
                 with col1:
