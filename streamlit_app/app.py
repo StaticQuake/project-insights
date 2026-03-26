@@ -97,6 +97,13 @@ html, body, [class*="css"] { font-family: 'Manrope', sans-serif !important; }
 ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0c0d10; }
 ::-webkit-scrollbar-thumb { background: #1c1f26; border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: #e8a020; }
+
+/* Overview card */
+.overview-card { background: #111318; border: 1px solid #1c1f26; border-radius: 4px; padding: 16px 20px; margin-bottom: 20px; }
+.overview-meta { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+.overview-meta-item { font-family: 'DM Mono', monospace; font-size: 10px; color: #4a5060; letter-spacing: 1px; }
+.overview-meta-item span { color: #c8cdd8; }
+.overview-text { font-size: 13px; color: #8a9090; line-height: 1.6; font-style: italic; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -355,6 +362,27 @@ with tab_movies:
             selected = st.selectbox("", movie_list['display_title'].tolist(),
                                     label_visibility="collapsed", key="movie_select")
             movie_id = movie_list[movie_list['display_title'] == selected].iloc[0]['id']
+
+            # Fetch overview from movies_master
+            movie_info = run_query(f"""
+                SELECT overview, original_language, genre_ids, release_date
+                FROM project_insights.movies_master
+                WHERE id = {movie_id} LIMIT 1
+            """)
+            if not movie_info.empty:
+                overview_text = movie_info['overview'].iloc[0] or 'No overview available.'
+                lang = LANG_MAP.get(movie_info['original_language'].iloc[0], movie_info['original_language'].iloc[0].upper())
+                genre = parse_genre(str(movie_info['genre_ids'].iloc[0]), MOVIE_GENRE_MAP)
+                release = str(movie_info['release_date'].iloc[0])[:4] if movie_info['release_date'].iloc[0] else 'N/A'
+                st.markdown(f'''<div class="overview-card">
+                    <div class="overview-meta">
+                        <div class="overview-meta-item">GENRE &nbsp;<span>{genre}</span></div>
+                        <div class="overview-meta-item">LANGUAGE &nbsp;<span>{lang}</span></div>
+                        <div class="overview-meta-item">RELEASE &nbsp;<span>{release}</span></div>
+                    </div>
+                    <div class="overview-text">{overview_text}</div>
+                </div>''', unsafe_allow_html=True)
+
             trend = run_query(f"""
                 SELECT snapshot_date, popularity, vote_average, vote_count
                 FROM project_insights.daily_metrics
@@ -690,6 +718,27 @@ with tab_tv:
             sel_tv = st.selectbox("", tv_list['display_title'].tolist(),
                                   label_visibility="collapsed", key="tv_select")
             tv_id = tv_list[tv_list['display_title'] == sel_tv].iloc[0]['id']
+
+            # Fetch overview from tv_master
+            tv_info = run_query(f"""
+                SELECT overview, original_language, genre_ids, first_air_date
+                FROM project_insights.tv_master
+                WHERE id = {tv_id} LIMIT 1
+            """)
+            if not tv_info.empty:
+                tv_overview_text = tv_info['overview'].iloc[0] or 'No overview available.'
+                tv_lang = LANG_MAP.get(tv_info['original_language'].iloc[0], tv_info['original_language'].iloc[0].upper())
+                tv_genre = parse_genre(str(tv_info['genre_ids'].iloc[0]), TV_GENRE_MAP)
+                tv_release = str(tv_info['first_air_date'].iloc[0])[:4] if tv_info['first_air_date'].iloc[0] else 'N/A'
+                st.markdown(f'''<div class="overview-card">
+                    <div class="overview-meta">
+                        <div class="overview-meta-item">GENRE &nbsp;<span>{tv_genre}</span></div>
+                        <div class="overview-meta-item">LANGUAGE &nbsp;<span>{tv_lang}</span></div>
+                        <div class="overview-meta-item">FIRST AIRED &nbsp;<span>{tv_release}</span></div>
+                    </div>
+                    <div class="overview-text">{tv_overview_text}</div>
+                </div>''', unsafe_allow_html=True)
+
             tv_trend = run_query(f"""
                 SELECT snapshot_date, popularity, vote_average, vote_count
                 FROM project_insights.tv_daily_metrics
