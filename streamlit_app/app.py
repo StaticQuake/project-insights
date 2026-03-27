@@ -562,7 +562,7 @@ with tab_movies:
     # ── 07 Language Distribution ────────────────────────────────────────────
     section("07", "Movies by Original Language")
 
-    lang_data['language'] = lang_data['original_language'].map(lambda x: LANG_MAP.get(x, x.upper()))
+    lang_data['language'] = lang_data['original_language'].map(lambda x: LANG_MAP.get(str(x), str(x).upper()) if pd.notna(x) else 'Unknown')
     fig7 = go.Figure(go.Pie(
         labels=lang_data['language'], values=lang_data['movie_count'],
         hole=0.55, marker=dict(colors=PALETTE, line=dict(color='#0c0d10', width=2)),
@@ -727,13 +727,13 @@ with tab_tv:
             """)
             if not tv_info.empty:
                 tv_overview_text = tv_info['overview'].iloc[0] or 'No overview available.'
-                tv_lang = LANG_MAP.get(tv_info['original_language'].iloc[0], tv_info['original_language'].iloc[0].upper())
+                tv_overview_lang = LANG_MAP.get(tv_info['original_language'].iloc[0], tv_info['original_language'].iloc[0].upper())
                 tv_genre = parse_genre(str(tv_info['genre_ids'].iloc[0]), TV_GENRE_MAP)
                 tv_release = str(tv_info['first_air_date'].iloc[0])[:4] if tv_info['first_air_date'].iloc[0] else 'N/A'
                 st.markdown(f'''<div class="overview-card">
                     <div class="overview-meta">
                         <div class="overview-meta-item">GENRE &nbsp;<span>{tv_genre}</span></div>
-                        <div class="overview-meta-item">LANGUAGE &nbsp;<span>{tv_lang}</span></div>
+                        <div class="overview-meta-item">LANGUAGE &nbsp;<span>{tv_overview_lang}</span></div>
                         <div class="overview-meta-item">FIRST AIRED &nbsp;<span>{tv_release}</span></div>
                     </div>
                     <div class="overview-text">{tv_overview_text}</div>
@@ -917,7 +917,7 @@ with tab_tv:
     # ── 07 Language Distribution ────────────────────────────────────────────
     section("07", "TV Shows by Original Language")
 
-    tv_lang['language'] = tv_lang['original_language'].map(lambda x: LANG_MAP.get(x, x.upper()))
+    tv_lang['language'] = tv_lang['original_language'].map(lambda x: LANG_MAP.get(str(x), str(x).upper()) if pd.notna(x) else 'Unknown')
     fig_tv7 = go.Figure(go.Pie(
         labels=tv_lang['language'], values=tv_lang['show_count'],
         hole=0.55, marker=dict(colors=PALETTE, line=dict(color='#0c0d10', width=2)),
